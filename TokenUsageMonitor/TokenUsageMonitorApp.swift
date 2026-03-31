@@ -14,8 +14,11 @@ struct TokenUsageMonitorApp: App {
                 .environmentObject(dataManager)
         } label: {
             HStack(spacing: 4) {
-                Image(systemName: "speedometer")
-                    .font(.system(size: 11))
+                Image(nsImage: {
+                    let img = NSImage(named: "AppIcon")!
+                    img.size = NSSize(width: 18, height: 18)
+                    return img
+                }())
                 Text(dataManager.titleLabel)
                     .font(.system(size: 11, weight: .medium, design: .monospaced))
             }
