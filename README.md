@@ -58,17 +58,29 @@
 - **Claude Code** installed and authenticated (`claude` command, then `/login`)
 - A **Claude Pro, Max, or Team** subscription (free plans do not expose usage data)
 
-## Build from Source
+## Install
+
+### Option 1 — Download DMG
+
+Download the latest `.dmg` from [Releases](https://github.com/MaksymTaran25/TokenUsageMonitor/releases), open it, and drag the app to Applications.
+
+### Option 2 — Build from source
 
 Requirements: Xcode 16+, [XcodeGen](https://github.com/yonaskolb/XcodeGen) (`brew install xcodegen`)
 
 ```bash
 git clone https://github.com/MaksymTaran25/TokenUsageMonitor.git
 cd TokenUsageMonitor
-./generate.sh
+./build.sh        # builds the .app
+./build.sh dmg    # builds and packages into a DMG
 ```
 
-This generates the Xcode project and opens it. Press **Cmd + R** to build and run.
+Or open in Xcode manually:
+
+```bash
+./generate.sh     # generates project and opens Xcode
+# Press Cmd + R to build and run
+```
 
 > On first launch, macOS may block the app. Go to **System Settings → Privacy & Security** and click **Open Anyway**.
 
