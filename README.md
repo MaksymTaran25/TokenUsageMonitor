@@ -19,6 +19,28 @@
 
 ---
 
+## Screenshots
+
+<p align="center">
+  <img src="screenshots/menubar.png" width="280" alt="Menu Bar" />
+</p>
+
+<p align="center">
+  <img src="screenshots/small-current.png" width="170" alt="Small Widget — Current Usage" />
+  &nbsp;&nbsp;
+  <img src="screenshots/small-weekly.png" width="170" alt="Small Widget — Weekly Usage" />
+</p>
+
+<p align="center">
+  <img src="screenshots/medium.png" width="340" alt="Medium Widget" />
+</p>
+
+<p align="center">
+  <img src="screenshots/large.png" width="280" alt="Large Widget" />
+</p>
+
+---
+
 ## Features
 
 - **Menu bar app** — live percentage display of your current rate limit usage
