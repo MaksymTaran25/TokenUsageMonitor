@@ -12,7 +12,7 @@
   <img src="https://img.shields.io/badge/macOS-14.0%2B-blue?logo=apple" />
   <img src="https://img.shields.io/badge/Swift-5.9-orange?logo=swift" />
   <img src="https://img.shields.io/badge/WidgetKit-supported-green" />
-  <img src="https://img.shields.io/badge/license-MIT-lightgrey" />
+  <img src="https://img.shields.io/badge/license-Source--Available-lightgrey" />
 </p>
 
 > **Disclaimer:** This is an unofficial, community-built tool. It is **not affiliated with, endorsed by, or supported by Anthropic**. It uses undocumented APIs that may change or break at any time. Use at your own risk.
@@ -82,4 +82,4 @@ TokenUsageMonitor/
 
 ## License
 
-[MIT](LICENSE)
+[Source-Available](LICENSE) — free for personal, non-commercial use. Commercial use and resale require written permission from the author.
