@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="https://developer.apple.com/assets/elements/icons/swiftui/swiftui-96x96_2x.png" width="80" />
+  <img src="TokenUsageMonitor/Assets.xcassets/AppIcon.appiconset/icon_256x256.png" width="128" />
 </p>
 
 <h1 align="center">Token Usage Monitor</h1>
@@ -45,17 +45,22 @@
 
 - **Menu bar app** — live percentage display of your current rate limit usage
 - **Three widget sizes** — small, medium, and large desktop widgets via WidgetKit
-- **Weekly widget** — dedicated widget for seven-day usage tracking
-- **Token breakdown** — per-model stats (input/output tokens) parsed from local Claude logs
-- **Monthly summary** — cumulative token and message counts
-- **Configurable refresh** — choose polling interval (1–15 min) to balance freshness vs. rate limiting
-- **Customizable layout** — show/hide and reorder sections in the menu bar popover
-- **Glassmorphism UI** — gradient progress bars with glow effects on translucent material cards
+- **Weekly widget** — dedicated small widget for seven-day usage tracking
+- **Token breakdown** — per-model stats (Opus, Sonnet, Haiku) parsed from local Claude logs
+- **Monthly summary** — 30-day cumulative token and message counts
+- **Customizable layout** — show/hide and drag-to-reorder sections in the menu bar popover
+- **Time windows** — switch between 24h, 7-day, and 30-day views for token stats
+- **Rate limit handling** — graceful fallback when API returns 429, shows last known data
+- **Auto-refresh** — polls usage data every 5 minutes in the background
 
 ## Prerequisites
 
-- **macOS 14.0** or later
-- **Claude Code** installed and authenticated (`claude` command, then `/login`)
+- **macOS 14.0** (Sonoma) or later
+- **Claude Code CLI** installed and signed in:
+  ```bash
+  npm install -g @anthropic-ai/claude-code
+  claude login
+  ```
 - A **Claude Pro, Max, or Team** subscription (free plans do not expose usage data)
 
 ## Install
@@ -104,15 +109,16 @@ TokenUsageMonitor/
 │   ├── TokenUsageMonitorWidget.swift # Widget definitions and timeline
 │   └── WidgetViews.swift            # Small/medium/large widget UIs
 ├── project.yml                       # XcodeGen project config
-└── generate.sh                       # Project generation script
+├── build.sh                          # Build and package script
+└── generate.sh                       # Xcode project generation
 ```
 
 ## How It Works
 
-1. **OAuth credentials** are read from the macOS Keychain (stored by Claude Code) — no manual token setup required
-2. **Rate limit data** is fetched from Anthropic's internal OAuth usage endpoint
+1. **OAuth credentials** are read from the macOS Keychain (stored by Claude Code CLI) — no manual token setup required
+2. **Rate limit data** is fetched from Anthropic's internal OAuth usage endpoint (`/api/oauth/usage`)
 3. **Token breakdown** is parsed from Claude Code's local JSONL conversation logs in `~/.claude/projects/`
-4. Data is shared with widgets via an App Group container
+4. Data is shared between the menu bar app and widgets via an App Group container file
 
 ## License
 
