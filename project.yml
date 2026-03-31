@@ -1,0 +1,68 @@
+name: TokenUsageMonitor
+options:
+  bundleIdPrefix: com.tokenusagemonitor
+  deploymentTarget:
+    macOS: "14.0"
+  createIntermediateGroups: true
+
+settings:
+  base:
+    SWIFT_VERSION: "5.9"
+    MACOSX_DEPLOYMENT_TARGET: "14.0"
+    CODE_SIGN_STYLE: Automatic
+    DEVELOPMENT_TEAM: 74P59G3972
+
+schemes:
+  TokenUsageMonitor:
+    build:
+      targets:
+        TokenUsageMonitor: all
+        TokenUsageMonitorWidgetExtension: all
+    run:
+      config: Debug
+
+targets:
+  TokenUsageMonitor:
+    type: application
+    platform: macOS
+    deploymentTarget: "14.0"
+    sources:
+      - path: Shared
+        createIntermediateGroups: true
+      - path: TokenUsageMonitor
+        createIntermediateGroups: true
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.tokenusagemonitor.app
+        INFOPLIST_FILE: TokenUsageMonitor/Info.plist
+        PRODUCT_NAME: TokenUsageMonitor
+    entitlements:
+      path: TokenUsageMonitor/TokenUsageMonitor.entitlements
+      properties:
+        com.apple.security.app-sandbox: false
+        com.apple.security.application-groups:
+          - group.com.tokenusagemonitor
+    dependencies:
+      - target: TokenUsageMonitorWidgetExtension
+        embed: true
+
+  TokenUsageMonitorWidgetExtension:
+    type: app-extension
+    platform: macOS
+    deploymentTarget: "14.0"
+    sources:
+      - path: Shared
+        createIntermediateGroups: true
+      - path: TokenUsageMonitorWidgetExtension
+        createIntermediateGroups: true
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.tokenusagemonitor.app.widget
+        INFOPLIST_FILE: TokenUsageMonitorWidgetExtension/Info.plist
+        PRODUCT_NAME: TokenUsageMonitorWidgetExtension
+    entitlements:
+      path: TokenUsageMonitorWidgetExtension/TokenUsageMonitorWidgetExtension.entitlements
+      properties:
+        com.apple.security.app-sandbox: true
+        com.apple.security.application-groups:
+          - group.com.tokenusagemonitor

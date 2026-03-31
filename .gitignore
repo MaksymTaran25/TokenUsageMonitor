@@ -1,0 +1,21 @@
+# Xcode build artifacts
+build/
+DerivedData/
+*.xcodeproj
+xcuserdata/
+
+# XcodeGen regenerates the project
+# Run ./generate.sh after cloning
+
+# macOS
+.DS_Store
+
+# Claude Code
+.claude/
+
+# Credentials (should never be committed)
+.credentials.json
+*.pem
+*.p12
+*.key
+.env

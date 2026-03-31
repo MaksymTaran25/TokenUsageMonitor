@@ -1,0 +1,161 @@
+// Token Usage Monitor
+// An unofficial, open-source tool for monitoring Claude usage.
+// Not affiliated with or endorsed by Anthropic. Use at your own risk.
+
+import Foundation
+import Combine
+import WidgetKit
+
+@MainActor
+final class DataManager: ObservableObject {
+    @Published var snapshot: UsageSnapshot = .placeholder
+    @Published var isLoading = false
+    @Published var errorMessage: String? = nil
+    @Published var isRateLimited = false
+    @Published var windowHours: Int = 24
+
+    private var timer: Timer?
+    private var intervalObserver: AnyCancellable?
+
+    init() {
+        loadFromFile()
+        Task { await refresh() }
+        startTimer()
+
+        // Restart timer when user changes refresh interval
+        intervalObserver = SettingsManager.shared.$refreshInterval
+            .dropFirst()
+            .sink { [weak self] _ in
+                Task { @MainActor in self?.startTimer() }
+            }
+    }
+
+    // MARK: - Title for menu bar
+
+    var titleLabel: String {
+        if let primary = snapshot.primaryBucket {
+            return String(format: "%.0f%%", primary.utilization)
+        }
+        if isLoading && snapshot.lastUpdated == .distantPast { return "…" }
+        return snapshot.formattedTotal
+    }
+
+    // MARK: - Refresh
+
+    func refresh() async {
+        isLoading = true
+        errorMessage = nil
+
+        let hours = windowHours
+        let tokenTask = Task.detached(priority: .background) {
+            parseUsage(hours: hours)
+        }
+        let monthlyTask = Task.detached(priority: .background) {
+            parseUsage(hours: 720)
+        }
+
+        let fetchResult = await fetchBuckets()
+        let tokenData = await tokenTask.value
+        let monthlyData = await monthlyTask.value
+
+        // Update rate-limited flag based on this fetch
+        switch fetchResult {
+        case .success(let buckets):
+            isRateLimited = false
+            snapshot = makeSnapshot(buckets: buckets, tokenData: tokenData, monthlyData: monthlyData)
+        case .rateLimited:
+            isRateLimited = true
+            snapshot = makeSnapshot(buckets: snapshot.buckets, tokenData: tokenData, monthlyData: monthlyData)
+        case .error(let msg):
+            isRateLimited = false
+            errorMessage = msg
+            snapshot = makeSnapshot(buckets: snapshot.buckets, tokenData: tokenData, monthlyData: monthlyData)
+        }
+
+        isLoading = false
+        saveToFile(snapshot)
+        WidgetCenter.shared.reloadAllTimelines()
+    }
+
+    func setWindow(_ hours: Int) {
+        Task { @MainActor in
+            windowHours = hours
+            await refresh()
+        }
+    }
+
+    // MARK: - OAuth fetch
+
+    private enum FetchResult {
+        case success([QuotaBucket])
+        case rateLimited
+        case error(String)
+    }
+
+    private func fetchBuckets() async -> FetchResult {
+        do {
+            let creds = try OAuthManager.shared.loadCredentials()
+            let buckets = try await UsageAPI.fetchBuckets(accessToken: creds.accessToken)
+            return .success(buckets)
+        } catch CredentialError.notFound {
+            return .error("Not signed in. Open the Claude app and complete login.")
+        } catch UsageAPIError.rateLimited {
+            return .rateLimited
+        } catch {
+            return .error(error.localizedDescription)
+        }
+    }
+
+    private func makeSnapshot(buckets: [QuotaBucket], tokenData: UsageSnapshot, monthlyData: UsageSnapshot) -> UsageSnapshot {
+        let order = ["five_hour", "session", "seven_day", "weekly", "monthly"]
+        let sorted = buckets.sorted {
+            let li = order.firstIndex(of: $0.name) ?? 99
+            let ri = order.firstIndex(of: $1.name) ?? 99
+            return li < ri
+        }
+        return UsageSnapshot(
+            buckets:         sorted,
+            totalTokens:     tokenData.totalTokens,
+            inputTokens:     tokenData.inputTokens,
+            outputTokens:    tokenData.outputTokens,
+            messageCount:    tokenData.messageCount,
+            byModel:         tokenData.byModel,
+            windowHours:     windowHours,
+            lastUpdated:     Date(),
+            monthlyTokens:   monthlyData.totalTokens,
+            monthlyMessages: monthlyData.messageCount
+        )
+    }
+
+    // MARK: - Persistence
+
+    private func startTimer() {
+        timer?.invalidate()
+        let interval = TimeInterval(SettingsManager.shared.refreshInterval)
+        timer = Timer.scheduledTimer(withTimeInterval: interval, repeats: true) { [weak self] _ in
+            guard let self else { return }
+            Task { @MainActor in await self.refresh() }
+        }
+    }
+
+    private func saveToFile(_ s: UsageSnapshot) {
+        guard let url  = sharedSnapshotURL(),
+              let data = try? JSONEncoder().encode(s) else { return }
+        try? data.write(to: url, options: .atomic)
+    }
+
+    private func loadFromFile() {
+        guard let url   = sharedSnapshotURL(),
+              let data  = try? Data(contentsOf: url),
+              var saved = try? JSONDecoder().decode(UsageSnapshot.self, from: data)
+        else { return }
+        // Ensure correct sort even for cached data
+        let order = ["five_hour", "session", "seven_day", "weekly", "monthly"]
+        saved.buckets.sort {
+            let li = order.firstIndex(of: $0.name) ?? 99
+            let ri = order.firstIndex(of: $1.name) ?? 99
+            return li < ri
+        }
+        snapshot = saved
+    }
+}
