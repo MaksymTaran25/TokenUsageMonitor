@@ -503,38 +503,12 @@ struct AppIcon: View {
     let size: CGFloat
 
     var body: some View {
-        ZStack {
-            RoundedRectangle(cornerRadius: size * 0.28, style: .continuous)
-                .fill(
-                    LinearGradient(
-                        colors: [.indigo, .purple, .pink.opacity(0.7)],
-                        startPoint: .topLeading,
-                        endPoint: .bottomTrailing
-                    )
-                )
-                .frame(width: size, height: size)
-                .shadow(color: .purple.opacity(0.4), radius: size * 0.15)
-
-            RoundedRectangle(cornerRadius: size * 0.2, style: .continuous)
-                .fill(
-                    LinearGradient(
-                        colors: [Color(white: 0.15), Color(white: 0.08)],
-                        startPoint: .top,
-                        endPoint: .bottom
-                    )
-                )
-                .frame(width: size * 0.78, height: size * 0.78)
-
-            Image(systemName: "speedometer")
-                .foregroundStyle(
-                    LinearGradient(
-                        colors: [.cyan, .purple],
-                        startPoint: .topLeading,
-                        endPoint: .bottomTrailing
-                    )
-                )
-                .font(.system(size: size * 0.4, weight: .semibold))
-        }
+        Image(nsImage: NSImage(named: "AppIcon") ?? NSImage())
+            .resizable()
+            .interpolation(.high)
+            .frame(width: size, height: size)
+            .clipShape(RoundedRectangle(cornerRadius: size * 0.22, style: .continuous))
+            .shadow(color: .purple.opacity(0.4), radius: size * 0.15)
     }
 }
 
