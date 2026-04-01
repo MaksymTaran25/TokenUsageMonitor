@@ -77,6 +77,7 @@
 
 ```bash
 brew tap MaksymTaran25/tap
+brew update
 brew install --cask token-usage-monitor
 ```
 
