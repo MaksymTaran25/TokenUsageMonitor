@@ -7,12 +7,17 @@ import SwiftUI
 struct MenuBarView: View {
     @EnvironmentObject var dm: DataManager
     @ObservedObject private var settings = SettingsManager.shared
+    @ObservedObject private var updater  = UpdateService.shared
     @State private var showSettings = false
 
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
             header
                 .padding(.bottom, 12)
+
+            if let update = updater.availableUpdate {
+                updateBanner(update)
+            }
 
             if showSettings {
                 settingsPanel
@@ -320,6 +325,44 @@ struct MenuBarView: View {
                 }
             }
         }
+    }
+
+    // MARK: - Update banner
+
+    private func updateBanner(_ update: AppcastEntry) -> some View {
+        HStack(spacing: 8) {
+            Image(systemName: "arrow.down.circle.fill")
+                .font(.system(size: 12))
+                .foregroundStyle(.cyan)
+            VStack(alignment: .leading, spacing: 1) {
+                Text("Update available - v\(update.version)")
+                    .font(.system(size: 11, weight: .medium))
+                Text(updater.isInstalling ? "Downloading..." : "Click to install")
+                    .font(.system(size: 10))
+                    .foregroundStyle(.secondary)
+            }
+            Spacer()
+            if updater.isInstalling {
+                ProgressView()
+                    .scaleEffect(0.6)
+                    .frame(width: 20, height: 20)
+            }
+        }
+        .padding(10)
+        .background(
+            RoundedRectangle(cornerRadius: 10, style: .continuous)
+                .fill(Color.cyan.opacity(0.08))
+                .overlay(
+                    RoundedRectangle(cornerRadius: 10, style: .continuous)
+                        .stroke(Color.cyan.opacity(0.2), lineWidth: 1)
+                )
+        )
+        .contentShape(Rectangle())
+        .onTapGesture {
+            guard !updater.isInstalling else { return }
+            Task { await updater.downloadAndInstall(update) }
+        }
+        .padding(.bottom, 8)
     }
 
     // MARK: - States

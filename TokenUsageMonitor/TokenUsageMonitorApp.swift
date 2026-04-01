@@ -8,6 +8,10 @@ import SwiftUI
 struct TokenUsageMonitorApp: App {
     @StateObject private var dataManager = DataManager()
 
+    init() {
+        Task { await UpdateService.shared.checkForUpdates() }
+    }
+
     var body: some Scene {
         MenuBarExtra {
             MenuBarView()
