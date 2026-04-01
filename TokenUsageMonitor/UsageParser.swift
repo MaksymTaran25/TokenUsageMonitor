@@ -10,13 +10,14 @@ private let claudeProjectsDir = FileManager.default
 
 // MARK: - Public entry point
 
-func parseUsage(hours: Int) -> UsageSnapshot {
+func parseUsage(hours: Int, directory: URL? = nil) -> UsageSnapshot {
+    let dir    = directory ?? claudeProjectsDir
     let cutoff = Date().addingTimeInterval(-Double(hours) * 3600)
     var entries: [RawEntry] = []
 
     let fm = FileManager.default
     guard let enumerator = fm.enumerator(
-        at: claudeProjectsDir,
+        at: dir,
         includingPropertiesForKeys: [.contentModificationDateKey],
         options: .skipsHiddenFiles
     ) else {

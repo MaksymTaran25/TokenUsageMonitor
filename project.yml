@@ -59,6 +59,8 @@ targets:
         createIntermediateGroups: true
       - path: TokenUsageMonitorTests
         createIntermediateGroups: true
+      - path: TokenUsageMonitor/UsageParser.swift
+      - path: TokenUsageMonitor/SettingsManager.swift
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.tokenusagemonitor.tests

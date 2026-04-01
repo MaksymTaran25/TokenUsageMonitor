@@ -101,15 +101,25 @@ final class DataManager: ObservableObject {
     private func fetchBuckets() async -> FetchResult {
         do {
             let creds = try OAuthManager.shared.loadCredentials()
-            if creds.isExpired {
-                return .error("Session expired. Relaunch the Claude app to refresh your credentials.")
-            }
             let buckets = try await UsageAPI.fetchBuckets(accessToken: creds.accessToken)
             return .success(buckets)
         } catch CredentialError.notFound {
             return .error("Not signed in. Open the Claude app and complete login.")
         } catch UsageAPIError.rateLimited {
             return .rateLimited
+        } catch UsageAPIError.unauthorized {
+            // Claude Code CLI may have silently refreshed the token in the keychain.
+            // Reload credentials and retry once before giving up.
+            guard let fresh = try? OAuthManager.shared.loadCredentials(),
+                  !fresh.isExpired else {
+                return .error("Session expired. Relaunch the Claude app to refresh your credentials.")
+            }
+            do {
+                let buckets = try await UsageAPI.fetchBuckets(accessToken: fresh.accessToken)
+                return .success(buckets)
+            } catch {
+                return .error("Session expired. Relaunch the Claude app to refresh your credentials.")
+            }
         } catch {
             return .error(error.localizedDescription)
         }
