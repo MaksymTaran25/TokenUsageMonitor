@@ -73,11 +73,18 @@
 
 ## Install
 
-### Option 1 - Download DMG
+### Option 1 - Homebrew
+
+```bash
+brew tap MaksymTaran25/tap
+brew install --cask token-usage-monitor
+```
+
+### Option 2 - Download DMG
 
 Download the latest `.dmg` from [Releases](https://github.com/MaksymTaran25/TokenUsageMonitor/releases), open it, and drag the app to Applications.
 
-### Option 2 - Build from source
+### Option 3 - Build from source
 
 Requirements: Xcode 16+, [XcodeGen](https://github.com/yonaskolb/XcodeGen) (`brew install xcodegen`)
 
