@@ -59,6 +59,7 @@
 - **Time windows** - switch between 24h, 7-day, and 30-day views for token stats
 - **Rate limit handling** - graceful fallback when API returns 429, shows last known data
 - **Auto-refresh** - polls usage data every 5 minutes in the background
+- **Agent Watchers** - floating panel that detects active Claude Code sessions and shows their project directories; click a session to focus its terminal window
 
 ## Prerequisites
 
@@ -118,7 +119,9 @@ TokenUsageMonitor/
 │   ├── UsageAPI.swift               # Anthropic OAuth usage endpoint
 │   ├── UsageParser.swift            # Local JSONL log parser
 │   ├── OAuthManager.swift           # Keychain credential loading
-│   └── SettingsManager.swift        # User preferences persistence
+│   ├── SettingsManager.swift        # User preferences persistence
+│   ├── AgentWatchersService.swift   # Claude session detection and process management
+│   └── AgentWatchersView.swift      # Floating agent watchers panel UI
 ├── TokenUsageMonitorWidgetExtension/
 │   ├── TokenUsageMonitorWidget.swift # Widget definitions and timeline
 │   └── WidgetViews.swift            # Small/medium/large widget UIs

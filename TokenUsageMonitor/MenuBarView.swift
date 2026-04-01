@@ -341,12 +341,15 @@ struct MenuBarView: View {
 
             Divider().padding(.vertical, 4)
 
-            Toggle(isOn: $settings.launchAtLogin) {
+            HStack {
                 Text("Launch at login")
-                    .font(.system(size: 11))
+                    .font(.system(size: 10, weight: .medium))
                     .foregroundStyle(.secondary)
+                Spacer()
+                Toggle("", isOn: $settings.launchAtLogin)
+                    .labelsHidden()
+                    .controlSize(.mini)
             }
-            .controlSize(.mini)
         }
     }
 

@@ -109,5 +109,9 @@ private struct SessionRow: View {
             RoundedRectangle(cornerRadius: 6, style: .continuous)
                 .fill(Color.primary.opacity(0.04))
         )
+        .contentShape(Rectangle())
+        .onTapGesture {
+            AgentWatchersService.shared.focus(session: session)
+        }
     }
 }

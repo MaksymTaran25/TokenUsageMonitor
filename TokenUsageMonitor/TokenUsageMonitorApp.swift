@@ -12,7 +12,6 @@ struct TokenUsageMonitorApp: App {
     init() {
         NotificationService.shared.setup()
         Task { await UpdateService.shared.checkForUpdates() }
-        Task { @MainActor in AgentWatchersService.shared.start() }
     }
 
     var body: some Scene {

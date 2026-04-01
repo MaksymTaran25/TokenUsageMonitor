@@ -22,7 +22,16 @@ final class AgentWatchersService: ObservableObject {
     @Published private(set) var sessions: [AgentSession] = []
 
     @Published var isVisible = false {
-        didSet { isVisible ? showOverlay() : hideOverlay() }
+        didSet {
+            if isVisible {
+                start()
+                showOverlay()
+            } else {
+                stop()
+                sessions = []
+                hideOverlay()
+            }
+        }
     }
 
     private var timer: Timer?
@@ -75,7 +84,20 @@ final class AgentWatchersService: ObservableObject {
     }
 
     private nonisolated static func workingDir(pid: Int) -> String {
-        let out = shell("/usr/sbin/lsof", ["-p", "\(pid)", "-d", "cwd", "-Fn"])
+        let cwd = lsofCwd(pid: pid)
+        if !cwd.isEmpty && cwd != "/" { return cwd }
+
+        // claude changes its cwd to / at startup - fall back to parent process cwd
+        let ppidOut = shell("/bin/ps", ["-p", "\(pid)", "-o", "ppid="])
+        if let ppid = Int(ppidOut.trimmingCharacters(in: .whitespacesAndNewlines)), ppid > 1 {
+            let parentCwd = lsofCwd(pid: ppid)
+            if !parentCwd.isEmpty && parentCwd != "/" { return parentCwd }
+        }
+        return ""
+    }
+
+    private nonisolated static func lsofCwd(pid: Int) -> String {
+        let out = shell("/usr/sbin/lsof", ["-a", "-p", "\(pid)", "-d", "cwd", "-Fn"])
         for line in out.split(separator: "\n") where line.hasPrefix("n") {
             return String(line.dropFirst())
         }
@@ -91,8 +113,45 @@ final class AgentWatchersService: ObservableObject {
         task.standardOutput = pipe
         task.standardError  = Pipe()
         try? task.run()
+        let data = pipe.fileHandleForReading.readDataToEndOfFile()
         task.waitUntilExit()
-        return String(data: pipe.fileHandleForReading.readDataToEndOfFile(), encoding: .utf8) ?? ""
+        return String(data: data, encoding: .utf8) ?? ""
+    }
+
+    // MARK: - Session focus
+
+    func focus(session: AgentSession) {
+        Task.detached(priority: .userInitiated) {
+            // Walk up PPID chain to find the terminal or GUI app that owns this session
+            var pid = session.id
+            var activated = false
+            for _ in 0..<6 {
+                let ppidStr = Self.shell("/bin/ps", ["-p", "\(pid)", "-o", "ppid="])
+                    .trimmingCharacters(in: .whitespacesAndNewlines)
+                guard let ppid = Int(ppidStr), ppid > 1 else { break }
+                let found: Bool = await MainActor.run {
+                    guard let app = NSRunningApplication(processIdentifier: pid_t(ppid)),
+                          let bundle = app.bundleIdentifier,
+                          app.activationPolicy == .regular,
+                          !bundle.contains("tokenusagemonitor") else { return false }
+                    app.activate(options: .activateIgnoringOtherApps)
+                    if let bundleURL = app.bundleURL {
+                        NSWorkspace.shared.openApplication(
+                            at: bundleURL,
+                            configuration: NSWorkspace.OpenConfiguration()
+                        ) { _, _ in }
+                    }
+                    return true
+                }
+                if found { activated = true; break }
+                pid = ppid
+            }
+            if !activated {
+                await MainActor.run {
+                    NSWorkspace.shared.open(URL(fileURLWithPath: session.directory))
+                }
+            }
+        }
     }
 
     // MARK: - Floating overlay
