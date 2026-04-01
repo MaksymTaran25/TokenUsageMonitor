@@ -55,7 +55,8 @@ if [ ! -d "${APP_PATH}" ]; then
     exit 1
 fi
 
-# Copy to dist root for easy access
+# Copy to dist root for easy access (remove old copy first to avoid cp merging into existing bundle)
+rm -rf "${BUILD_DIR}/${APP_NAME}.app"
 cp -R "${APP_PATH}" "${BUILD_DIR}/${APP_NAME}.app"
 
 echo ""
