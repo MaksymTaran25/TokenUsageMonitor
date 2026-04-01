@@ -53,16 +53,22 @@ final class AgentWatchersService: ObservableObject {
 
     private nonisolated static func detectSessions() -> [AgentSession] {
         let output = shell("/bin/ps", ["-eo", "pid,args"])
-        let claudeLines = output.split(separator: "\n").filter {
-            $0.lowercased().contains("claude") && !$0.lowercased().contains("tokenusagemonitor")
+        let claudeLines = output.split(separator: "\n").filter { line in
+            let lower = line.lowercased()
+            return lower.contains("claude") &&
+                   !lower.contains("/applications/claude.app/") &&  // Claude desktop app
+                   !lower.contains("claude helper") &&               // Electron helpers
+                   !lower.contains("disclaimer") &&                  // wrapper around claude-code binary
+                   !lower.contains("tokenusagemonitor") &&
+                   !lower.contains("grep")
         }
-        Logger.data.debug("Agent Watchers ps matches: \(claudeLines.count) - \(claudeLines.joined(separator: " | "))")
+        Logger.data.info("Agent Watchers - \(claudeLines.count) match(es)")
 
         return claudeLines.compactMap { line -> AgentSession? in
             let parts = line.trimmingCharacters(in: .whitespaces).split(separator: " ", maxSplits: 1)
             guard parts.count == 2, let pid = Int(parts[0]) else { return nil }
             let cwd = workingDir(pid: pid)
-            Logger.data.debug("Agent Watchers PID \(pid) cwd: '\(cwd)'")
+            Logger.data.info("Agent Watchers PID \(pid) cwd: '\(cwd)'")
             guard !cwd.isEmpty, cwd != "/" else { return nil }
             return AgentSession(id: pid, directory: cwd)
         }
