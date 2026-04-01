@@ -136,7 +136,7 @@ TokenUsageMonitor/
 1. **OAuth credentials** are read from the macOS Keychain (stored by Claude Code CLI) - no manual token setup required
 2. **Rate limit data** is fetched from Anthropic's internal OAuth usage endpoint (`/api/oauth/usage`)
 3. **Token breakdown** is parsed from Claude Code's local JSONL conversation logs in `~/.claude/projects/`
-4. Data is shared between the menu bar app and widgets via an App Group container file
+4. Data is shared between the menu bar app and widgets via the widget extension's sandbox container - no Apple Developer account required
 
 ## Troubleshooting
 
