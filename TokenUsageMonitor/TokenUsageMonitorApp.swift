@@ -10,6 +10,7 @@ struct TokenUsageMonitorApp: App {
     @StateObject private var theme       = ThemeManager.shared
 
     init() {
+        NotificationService.shared.setup()
         Task { await UpdateService.shared.checkForUpdates() }
         Task { @MainActor in AgentWatchersService.shared.start() }
     }

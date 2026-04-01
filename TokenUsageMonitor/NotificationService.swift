@@ -3,18 +3,38 @@
 // Not affiliated with or endorsed by Anthropic. Use at your own risk.
 
 import UserNotifications
+import AppKit
 import OSLog
 
-final class NotificationService {
+final class NotificationService: NSObject, UNUserNotificationCenterDelegate {
     static let shared = NotificationService()
 
     // Tracks which (bucket + level) combos have already fired to avoid spamming
     private var fired: Set<String> = []
 
+    /// Call once at launch to register the delegate.
+    func setup() {
+        UNUserNotificationCenter.current().delegate = self
+    }
+
     func requestPermission() {
-        UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .sound]) { granted, error in
-            if let error { Logger.data.error("Notification permission error: \(error)") }
-            Logger.data.info("Notifications permission granted: \(granted)")
+        UNUserNotificationCenter.current().getNotificationSettings { settings in
+            switch settings.authorizationStatus {
+            case .notDetermined:
+                UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .sound]) { granted, error in
+                    if let error { Logger.data.error("Notification permission error: \(error)") }
+                    Logger.data.info("Notifications permission granted: \(granted)")
+                }
+            case .denied:
+                // Already denied - open System Settings so the user can enable it manually
+                DispatchQueue.main.async {
+                    NSWorkspace.shared.open(URL(string: "x-apple.systempreferences:com.apple.preference.notifications")!)
+                }
+            case .authorized, .provisional, .ephemeral:
+                Logger.data.info("Notifications already authorized")
+            @unknown default:
+                break
+            }
         }
     }
 
@@ -43,11 +63,15 @@ final class NotificationService {
                     fired.insert(wKey)
                 }
             } else {
-                // Usage dropped back down - reset so the next spike notifies again
                 fired.remove(wKey)
                 fired.remove(cKey)
             }
         }
+    }
+
+    // Show notifications even when the app is in the foreground
+    func userNotificationCenter(_ center: UNUserNotificationCenter, willPresent notification: UNNotification, withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void) {
+        completionHandler([.banner, .sound])
     }
 
     private func send(title: String, body: String, id: String) {
