@@ -310,10 +310,10 @@ struct MenuBarView: View {
             }
 
             if theme.preset == .custom {
-                HStack(spacing: 12) {
-                    ThemeColorPicker(label: "Normal",   color: $theme.customNormal)
-                    ThemeColorPicker(label: "Warning",  color: $theme.customWarning)
-                    ThemeColorPicker(label: "Critical", color: $theme.customCritical)
+                VStack(alignment: .leading, spacing: 6) {
+                    ColorSwatchRow(label: "Normal",   selected: $theme.customNormal)
+                    ColorSwatchRow(label: "Warning",  selected: $theme.customWarning)
+                    ColorSwatchRow(label: "Critical", selected: $theme.customCritical)
                 }
                 .padding(.top, 4)
             }
@@ -700,22 +700,43 @@ struct RefreshOptionButton: View {
     }
 }
 
-// MARK: - Theme color picker
+// MARK: - Theme color swatch row
 
-struct ThemeColorPicker: View {
+struct ColorSwatchRow: View {
     let label: String
-    @Binding var color: Color
+    @Binding var selected: Color
+
+    private let swatches: [Color] = [
+        .red, .orange, .yellow, .green, .mint, .teal, .cyan, .blue, .indigo, .purple, .pink, Color(white: 0.6)
+    ]
 
     var body: some View {
-        VStack(spacing: 4) {
-            ColorPicker("", selection: $color, supportsOpacity: false)
-                .labelsHidden()
-                .frame(width: 28, height: 28)
+        HStack(spacing: 6) {
             Text(label)
-                .font(.system(size: 9))
+                .font(.system(size: 10))
                 .foregroundStyle(.secondary)
+                .frame(width: 44, alignment: .leading)
+            HStack(spacing: 4) {
+                ForEach(swatches.indices, id: \.self) { i in
+                    let color = swatches[i]
+                    Circle()
+                        .fill(color)
+                        .frame(width: 16, height: 16)
+                        .overlay(
+                            Circle().stroke(Color.white.opacity(0.9), lineWidth: isSameColor(color, selected) ? 2 : 0)
+                        )
+                        .onTapGesture { selected = color }
+                }
+            }
         }
-        .frame(maxWidth: .infinity)
+    }
+
+    private func isSameColor(_ a: Color, _ b: Color) -> Bool {
+        guard let a = NSColor(a).usingColorSpace(.sRGB),
+              let b = NSColor(b).usingColorSpace(.sRGB) else { return false }
+        return abs(a.redComponent   - b.redComponent)   < 0.01 &&
+               abs(a.greenComponent - b.greenComponent) < 0.01 &&
+               abs(a.blueComponent  - b.blueComponent)  < 0.01
     }
 }
 
