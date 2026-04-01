@@ -10,7 +10,6 @@
 
 <p align="center">
   <a href="https://github.com/MaksymTaran25/TokenUsageMonitor/releases/latest"><img src="https://img.shields.io/github/v/release/MaksymTaran25/TokenUsageMonitor?label=release&logo=github" /></a>
-  <a href="https://github.com/MaksymTaran25/TokenUsageMonitor/releases"><img src="https://img.shields.io/github/downloads/MaksymTaran25/TokenUsageMonitor/total?logo=github" /></a>
   <img src="https://img.shields.io/badge/macOS-14.0%2B-blue?logo=apple" />
   <img src="https://img.shields.io/badge/Swift-5.9-orange?logo=swift" />
   <img src="https://img.shields.io/badge/SwiftUI-WidgetKit-green?logo=swift" />

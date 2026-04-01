@@ -249,7 +249,6 @@ struct MenuBarView: View {
     // MARK: - Settings panel
 
     private var settingsPanel: some View {
-        ScrollView {
         VStack(alignment: .leading, spacing: 8) {
             Text("Visible sections")
                 .font(.system(size: 10, weight: .medium))
@@ -349,8 +348,6 @@ struct MenuBarView: View {
             }
             .controlSize(.mini)
         }
-        } // ScrollView
-        .frame(maxHeight: 380)
     }
 
     // MARK: - Footer
