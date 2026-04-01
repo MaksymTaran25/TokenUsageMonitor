@@ -26,22 +26,26 @@
 
 ## Screenshots
 
+### Menu Bar Popover
+
 <p align="center">
-  <img src="screenshots/menubar.png" width="280" alt="Menu Bar" />
+  <img src="screenshots/menubar.png" width="320" alt="Menu Bar Popover" />
+</p>
+
+### Widgets
+
+<p align="center">
+  <img src="screenshots/large.png" width="360" alt="Large Widget" />
 </p>
 
 <p align="center">
-  <img src="screenshots/small-current.png" width="170" alt="Small Widget — Current Usage" />
-  &nbsp;&nbsp;
-  <img src="screenshots/small-weekly.png" width="170" alt="Small Widget — Weekly Usage" />
+  <img src="screenshots/medium.png" width="420" alt="Medium Widget" />
 </p>
 
 <p align="center">
-  <img src="screenshots/medium.png" width="340" alt="Medium Widget" />
-</p>
-
-<p align="center">
-  <img src="screenshots/large.png" width="280" alt="Large Widget" />
+  <img src="screenshots/small-current.png" width="190" alt="Small Widget — Current Usage" />
+  &nbsp;&nbsp;&nbsp;
+  <img src="screenshots/small-weekly.png" width="190" alt="Small Widget — Weekly Usage" />
 </p>
 
 ---
