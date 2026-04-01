@@ -10,7 +10,6 @@ settings:
     SWIFT_VERSION: "5.9"
     MACOSX_DEPLOYMENT_TARGET: "14.0"
     CODE_SIGN_STYLE: Automatic
-    DEVELOPMENT_TEAM: 74P59G3972
 
 schemes:
   TokenUsageMonitor:
@@ -18,8 +17,13 @@ schemes:
       targets:
         TokenUsageMonitor: all
         TokenUsageMonitorWidgetExtension: all
+        TokenUsageMonitorTests: [test]
     run:
       config: Debug
+    test:
+      config: Debug
+      targets:
+        - TokenUsageMonitorTests
 
 targets:
   TokenUsageMonitor:
@@ -45,6 +49,20 @@ targets:
     dependencies:
       - target: TokenUsageMonitorWidgetExtension
         embed: true
+
+  TokenUsageMonitorTests:
+    type: bundle.unit-test
+    platform: macOS
+    deploymentTarget: "14.0"
+    sources:
+      - path: Shared
+        createIntermediateGroups: true
+      - path: TokenUsageMonitorTests
+        createIntermediateGroups: true
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.tokenusagemonitor.tests
+        INFOPLIST_FILE: TokenUsageMonitorTests/Info.plist
 
   TokenUsageMonitorWidgetExtension:
     type: app-extension

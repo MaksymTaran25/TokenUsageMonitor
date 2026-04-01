@@ -128,6 +128,30 @@ TokenUsageMonitor/
 3. **Token breakdown** is parsed from Claude Code's local JSONL conversation logs in `~/.claude/projects/`
 4. Data is shared between the menu bar app and widgets via an App Group container file
 
+## Troubleshooting
+
+**App is blocked by macOS on first launch**
+Go to **System Settings → Privacy & Security** and click **Open Anyway**.
+
+**Widgets show "No data"**
+Open the main app at least once so it can fetch and write data to the shared container. Then right-click a widget → **Edit Widget** to force a refresh.
+
+**"No quota data" in widgets / menu bar shows "–%"**
+The app reads rate limit data from Anthropic's OAuth endpoint. This requires:
+- Claude Code CLI to be installed and signed in (`claude login`)
+- A Claude Pro, Max, or Team subscription (free plans do not expose usage data)
+
+**Token breakdown shows 0 or no activity**
+Make sure `~/.claude/projects/` exists and contains JSONL conversation logs. These are written by Claude Code as you use it.
+
+**Widgets stop updating**
+macOS may suspend widget timelines to save power. Open the main app to trigger a manual refresh, which also calls `WidgetCenter.shared.reloadAllTimelines()`.
+
+**Build fails with provisioning error**
+If building from source, open `project.yml` and set `DEVELOPMENT_TEAM` to your own Apple Developer team ID, or remove the line entirely for local development.
+
+---
+
 ## License
 
 [Source-Available](LICENSE) — free for personal, non-commercial use. Commercial use and resale require written permission from the author.

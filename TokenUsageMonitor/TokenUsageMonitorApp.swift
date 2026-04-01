@@ -15,7 +15,7 @@ struct TokenUsageMonitorApp: App {
         } label: {
             HStack(spacing: 4) {
                 Image(nsImage: {
-                    let img = NSImage(named: "AppIcon")!
+                    let img = NSImage(named: "AppIcon") ?? NSImage()
                     img.size = NSSize(width: 18, height: 18)
                     return img
                 }())
