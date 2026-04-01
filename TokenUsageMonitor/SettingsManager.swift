@@ -43,8 +43,16 @@ final class SettingsManager: ObservableObject {
         }
     }
 
+    /// Last selected time window in hours (24, 168, or 720).
+    @Published var windowHours: Int {
+        didSet {
+            UserDefaults.standard.set(windowHours, forKey: windowKey)
+        }
+    }
+
     private let key = "com.tokenusagemonitor.settings.v1"
     private let refreshKey = "com.tokenusagemonitor.refreshInterval"
+    private let windowKey  = "com.tokenusagemonitor.windowHours"
 
     private init() {
         if let data = UserDefaults.standard.data(forKey: key),
@@ -55,8 +63,11 @@ final class SettingsManager: ObservableObject {
             self.visibleSections = Self.allSectionIDs
         }
 
-        let saved = UserDefaults.standard.integer(forKey: refreshKey)
-        self.refreshInterval = saved > 0 ? saved : 300 // default 5 min
+        let savedInterval = UserDefaults.standard.integer(forKey: refreshKey)
+        self.refreshInterval = savedInterval > 0 ? savedInterval : 300 // default 5 min
+
+        let savedWindow = UserDefaults.standard.integer(forKey: windowKey)
+        self.windowHours = [24, 168, 720].contains(savedWindow) ? savedWindow : 24
     }
 
     /// Returns whether a section ID is currently visible.

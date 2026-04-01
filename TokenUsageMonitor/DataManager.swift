@@ -12,10 +12,11 @@ final class DataManager: ObservableObject {
     @Published var isLoading = false
     @Published var errorMessage: String? = nil
     @Published var isRateLimited = false
-    @Published var windowHours: Int = 24
+    @Published var windowHours: Int = SettingsManager.shared.windowHours
 
     private var timer: Timer?
     private var intervalObserver: AnyCancellable?
+    private var consecutiveRateLimits = 0
 
     init() {
         loadFromFile()
@@ -61,12 +62,16 @@ final class DataManager: ObservableObject {
         // Update rate-limited flag based on this fetch
         switch fetchResult {
         case .success(let buckets):
+            consecutiveRateLimits = 0
             isRateLimited = false
             snapshot = makeSnapshot(buckets: buckets, tokenData: tokenData, monthlyData: monthlyData)
         case .rateLimited:
+            consecutiveRateLimits += 1
             isRateLimited = true
             snapshot = makeSnapshot(buckets: snapshot.buckets, tokenData: tokenData, monthlyData: monthlyData)
+            startTimer() // restart with backoff delay
         case .error(let msg):
+            consecutiveRateLimits = 0
             isRateLimited = false
             errorMessage = msg
             snapshot = makeSnapshot(buckets: snapshot.buckets, tokenData: tokenData, monthlyData: monthlyData)
@@ -80,6 +85,7 @@ final class DataManager: ObservableObject {
     func setWindow(_ hours: Int) {
         Task { @MainActor in
             windowHours = hours
+            SettingsManager.shared.windowHours = hours
             await refresh()
         }
     }
@@ -95,6 +101,9 @@ final class DataManager: ObservableObject {
     private func fetchBuckets() async -> FetchResult {
         do {
             let creds = try OAuthManager.shared.loadCredentials()
+            if creds.isExpired {
+                return .error("Session expired. Relaunch the Claude app to refresh your credentials.")
+            }
             let buckets = try await UsageAPI.fetchBuckets(accessToken: creds.accessToken)
             return .success(buckets)
         } catch CredentialError.notFound {
@@ -131,7 +140,11 @@ final class DataManager: ObservableObject {
 
     private func startTimer() {
         timer?.invalidate()
-        let interval = TimeInterval(SettingsManager.shared.refreshInterval)
+        let base = TimeInterval(SettingsManager.shared.refreshInterval)
+        // Exponential backoff after consecutive 429s: 5m → 10m → 20m, capped at 30m
+        let interval = consecutiveRateLimits > 0
+            ? min(base * pow(2.0, Double(consecutiveRateLimits)), 1800)
+            : base
         timer = Timer.scheduledTimer(withTimeInterval: interval, repeats: true) { [weak self] _ in
             guard let self else { return }
             Task { @MainActor in await self.refresh() }

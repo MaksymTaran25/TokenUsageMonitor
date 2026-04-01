@@ -88,6 +88,8 @@ struct MenuBarView: View {
         case "token_breakdown":
             if !dm.snapshot.byModel.isEmpty {
                 tokenSection
+            } else if !dm.isLoading {
+                emptyTokenState
             }
         default:
             // Any other API bucket (session, weekly, monthly, etc.)
@@ -200,6 +202,25 @@ struct MenuBarView: View {
                 .font(.system(size: 10, design: .monospaced))
                 .foregroundStyle(.secondary)
         }
+    }
+
+    // MARK: - Empty token state
+
+    private var emptyTokenState: some View {
+        HStack(spacing: 6) {
+            Image(systemName: "text.page.slash")
+                .font(.system(size: 10))
+                .foregroundStyle(.secondary)
+            Text("No usage data in this window")
+                .font(.system(size: 10))
+                .foregroundStyle(.secondary)
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding(10)
+        .background(
+            RoundedRectangle(cornerRadius: 10, style: .continuous)
+                .fill(.ultraThinMaterial)
+        )
     }
 
     // MARK: - Window picker

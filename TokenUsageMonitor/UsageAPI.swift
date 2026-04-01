@@ -105,16 +105,7 @@ struct UsageAPI {
         else if let v = d["utilization"] as? Int    { utilization = Double(v) }
         else                                        { return nil }
 
-        var resetsAt: Date? = nil
-        if let s = d["resets_at"] as? String {
-            let fmt = ISO8601DateFormatter()
-            fmt.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
-            resetsAt = fmt.date(from: s)
-            if resetsAt == nil {
-                fmt.formatOptions = [.withInternetDateTime]
-                resetsAt = fmt.date(from: s)
-            }
-        }
+        let resetsAt = (d["resets_at"] as? String).flatMap { parseISO8601($0) }
 
         return QuotaBucket(name: name, utilization: utilization, resetsAt: resetsAt)
     }

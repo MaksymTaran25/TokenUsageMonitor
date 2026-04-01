@@ -132,6 +132,15 @@ struct UsageSnapshot: Codable {
 
 // MARK: - Helpers
 
+/// Parses an ISO 8601 date string, supporting both fractional and whole seconds.
+func parseISO8601(_ string: String) -> Date? {
+    let fmt = ISO8601DateFormatter()
+    fmt.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
+    if let d = fmt.date(from: string) { return d }
+    fmt.formatOptions = [.withInternetDateTime]
+    return fmt.date(from: string)
+}
+
 func formatTokens(_ n: Int) -> String {
     if n >= 1_000_000 { return String(format: "%.1fM", Double(n) / 1_000_000) }
     if n >= 1_000     { return String(format: "%.0fk", Double(n) / 1_000) }

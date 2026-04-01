@@ -128,10 +128,3 @@ private func aggregate(entries: [RawEntry], hours: Int) -> UsageSnapshot {
     )
 }
 
-private func parseISO8601(_ string: String) -> Date? {
-    let fmt = ISO8601DateFormatter()
-    fmt.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
-    if let d = fmt.date(from: string) { return d }
-    fmt.formatOptions = [.withInternetDateTime]
-    return fmt.date(from: string)
-}
