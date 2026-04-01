@@ -31,12 +31,20 @@ fi
 echo "==> Generating Xcode project..."
 xcodegen generate
 
+if [ -z "${DEVELOPMENT_TEAM}" ]; then
+    echo "Error: DEVELOPMENT_TEAM is not set."
+    echo "Run: DEVELOPMENT_TEAM=<your-team-id> ./build.sh"
+    echo "(Find your team ID at developer.apple.com → Membership)"
+    exit 1
+fi
+
 echo "==> Building ${APP_NAME} (Release)..."
 xcodebuild \
     -scheme "${APP_NAME}" \
     -configuration Release \
     -derivedDataPath "${BUILD_DIR}/DerivedData" \
     -allowProvisioningUpdates \
+    DEVELOPMENT_TEAM="${DEVELOPMENT_TEAM}" \
     build \
     2>&1 | tail -5
 
