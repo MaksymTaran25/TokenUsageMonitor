@@ -8,6 +8,7 @@ struct MenuBarView: View {
     @EnvironmentObject var dm: DataManager
     @ObservedObject private var settings = SettingsManager.shared
     @ObservedObject private var updater  = UpdateService.shared
+    @ObservedObject private var theme    = ThemeManager.shared
     @State private var showSettings = false
 
     var body: some View {
@@ -290,6 +291,32 @@ struct MenuBarView: View {
                     }
                 }
             }
+
+            Divider().padding(.vertical, 4)
+
+            Text("Theme")
+                .font(.system(size: 10, weight: .medium))
+                .foregroundStyle(.secondary)
+
+            HStack(spacing: 4) {
+                ForEach(ThemeManager.Preset.allCases, id: \.self) { p in
+                    RefreshOptionButton(
+                        label: p.rawValue,
+                        isActive: theme.preset == p
+                    ) {
+                        theme.preset = p
+                    }
+                }
+            }
+
+            if theme.preset == .custom {
+                HStack(spacing: 12) {
+                    ThemeColorPicker(label: "Normal",   color: $theme.customNormal)
+                    ThemeColorPicker(label: "Warning",  color: $theme.customWarning)
+                    ThemeColorPicker(label: "Critical", color: $theme.customCritical)
+                }
+                .padding(.top, 4)
+            }
         }
     }
 
@@ -428,35 +455,23 @@ struct MenuBarView: View {
 
 struct QuotaBarView: View {
     let bucket: QuotaBucket
+    @ObservedObject private var theme = ThemeManager.shared
 
     private var gradient: LinearGradient {
+        let colors: [Color]
         switch bucket.status {
-        case .normal:
-            return LinearGradient(
-                colors: [.teal, .cyan],
-                startPoint: .leading,
-                endPoint: .trailing
-            )
-        case .warning:
-            return LinearGradient(
-                colors: [.orange, .yellow],
-                startPoint: .leading,
-                endPoint: .trailing
-            )
-        case .critical:
-            return LinearGradient(
-                colors: [.red, .pink],
-                startPoint: .leading,
-                endPoint: .trailing
-            )
+        case .normal:   colors = theme.normalGradient
+        case .warning:  colors = theme.warningGradient
+        case .critical: colors = theme.criticalGradient
         }
+        return LinearGradient(colors: colors, startPoint: .leading, endPoint: .trailing)
     }
 
     private var glowColor: Color {
         switch bucket.status {
-        case .normal:   return .cyan
-        case .warning:  return .orange
-        case .critical: return .red
+        case .normal:   return theme.normalGlow
+        case .warning:  return theme.warningGlow
+        case .critical: return theme.criticalGlow
         }
     }
 
@@ -682,6 +697,25 @@ struct RefreshOptionButton: View {
         }
         .buttonStyle(.plain)
         .onHover { isHovered = $0 }
+    }
+}
+
+// MARK: - Theme color picker
+
+struct ThemeColorPicker: View {
+    let label: String
+    @Binding var color: Color
+
+    var body: some View {
+        VStack(spacing: 4) {
+            ColorPicker("", selection: $color, supportsOpacity: false)
+                .labelsHidden()
+                .frame(width: 28, height: 28)
+            Text(label)
+                .font(.system(size: 9))
+                .foregroundStyle(.secondary)
+        }
+        .frame(maxWidth: .infinity)
     }
 }
 

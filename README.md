@@ -16,7 +16,7 @@
   <img src="https://img.shields.io/badge/SwiftUI-WidgetKit-green?logo=swift" />
   <img src="https://img.shields.io/badge/Xcode-16%2B-blue?logo=xcode" />
   <img src="https://img.shields.io/badge/Claude-Pro%20%7C%20Max%20%7C%20Team-d4a574?logo=anthropic" />
-<a href="LICENSE"><img src="https://img.shields.io/badge/license-Source--Available-lightgrey" /></a>
+<a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-green" /></a>
 </p>
 
 > **Disclaimer:** This is an unofficial, community-built tool. It is **not affiliated with, endorsed by, or supported by Anthropic**. It uses undocumented APIs that may change or break at any time. Use at your own risk.
@@ -161,4 +161,4 @@ If building from source, open `project.yml` and set `DEVELOPMENT_TEAM` to your o
 
 ## License
 
-[Source-Available](LICENSE) - free for personal, non-commercial use. Commercial use and resale require written permission from the author.
+[MIT](LICENSE) - free to use, modify, and distribute.
