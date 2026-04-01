@@ -7,30 +7,33 @@
 
 import Foundation
 
-// MARK: - App Group constants
+// MARK: - Shared snapshot path
 
-let appGroupID       = "group.com.tokenusagemonitor"
-let snapshotFileName = "widget-data.json"
+let snapshotFileName   = "widget-data.json"
+let widgetBundleID     = "com.tokenusagemonitor.app.widget"
 
-/// Returns the shared container URL for both sandboxed (widget) and
-/// non-sandboxed (main app) processes.
-/// - Sandboxed: uses the App Group container via FileManager API.
-/// - Non-sandboxed: constructs the Group Containers path directly.
-func sharedContainerURL() -> URL? {
-    // Works for sandboxed processes (widget extension)
-    if let url = FileManager.default.containerURL(
-        forSecurityApplicationGroupIdentifier: appGroupID
-    ) { return url }
-
-    // Fallback for non-sandboxed main app
-    let home = FileManager.default.homeDirectoryForCurrentUser
-    let url  = home.appendingPathComponent("Library/Group Containers/\(appGroupID)")
-    try? FileManager.default.createDirectory(at: url, withIntermediateDirectories: true)
-    return url
-}
-
+/// Returns the URL used by both the main app and widget to share snapshot data.
+/// Uses the widget extension's own sandbox container, which:
+/// - The widget can always access (it's its own container's Documents directory)
+/// - The main app can access because it is not sandboxed (constructs the real path)
+/// This avoids the need for App Groups, which require a paid Apple Developer account.
 func sharedSnapshotURL() -> URL? {
-    sharedContainerURL()?.appendingPathComponent(snapshotFileName)
+    let fm = FileManager.default
+
+    // Widget (sandboxed): homeDirectoryForCurrentUser is already the container root,
+    // so Documents maps correctly to the widget's own container/Documents.
+    if Bundle.main.bundleIdentifier == widgetBundleID {
+        guard let docs = fm.urls(for: .documentDirectory, in: .userDomainMask).first
+        else { return nil }
+        try? fm.createDirectory(at: docs, withIntermediateDirectories: true)
+        return docs.appendingPathComponent(snapshotFileName)
+    }
+
+    // Main app (unsandboxed): construct the real path to the widget's container.
+    let home = fm.homeDirectoryForCurrentUser
+    let url  = home.appendingPathComponent("Library/Containers/\(widgetBundleID)/Data/Documents")
+    try? fm.createDirectory(at: url, withIntermediateDirectories: true)
+    return url.appendingPathComponent(snapshotFileName)
 }
 
 // MARK: - Quota bucket (from OAuth API)

@@ -44,8 +44,6 @@ targets:
       path: TokenUsageMonitor/TokenUsageMonitor.entitlements
       properties:
         com.apple.security.app-sandbox: false
-        com.apple.security.application-groups:
-          - group.com.tokenusagemonitor
     dependencies:
       - target: TokenUsageMonitorWidgetExtension
         embed: true
@@ -84,5 +82,3 @@ targets:
       path: TokenUsageMonitorWidgetExtension/TokenUsageMonitorWidgetExtension.entitlements
       properties:
         com.apple.security.app-sandbox: true
-        com.apple.security.application-groups:
-          - group.com.tokenusagemonitor
