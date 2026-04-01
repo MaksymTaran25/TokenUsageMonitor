@@ -16,8 +16,7 @@
   <img src="https://img.shields.io/badge/SwiftUI-WidgetKit-green?logo=swift" />
   <img src="https://img.shields.io/badge/Xcode-16%2B-blue?logo=xcode" />
   <img src="https://img.shields.io/badge/Claude-Pro%20%7C%20Max%20%7C%20Team-d4a574?logo=anthropic" />
-  <a href="https://github.com/MaksymTaran25/TokenUsageMonitor/stargazers"><img src="https://img.shields.io/github/stars/MaksymTaran25/TokenUsageMonitor?style=flat&logo=github" /></a>
-  <a href="LICENSE"><img src="https://img.shields.io/badge/license-Source--Available-lightgrey" /></a>
+<a href="LICENSE"><img src="https://img.shields.io/badge/license-Source--Available-lightgrey" /></a>
 </p>
 
 > **Disclaimer:** This is an unofficial, community-built tool. It is **not affiliated with, endorsed by, or supported by Anthropic**. It uses undocumented APIs that may change or break at any time. Use at your own risk.
