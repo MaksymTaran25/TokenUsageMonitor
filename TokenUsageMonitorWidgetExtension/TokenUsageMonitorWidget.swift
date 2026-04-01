@@ -71,7 +71,7 @@ struct UsageEntry: TimelineEntry {
     var snapshot: UsageSnapshot
 }
 
-// MARK: - Main widget (current usage — small/medium/large)
+// MARK: - Main widget (current usage - small/medium/large)
 
 struct TokenUsageMonitorWidget: Widget {
     let kind = "TokenUsageMonitorWidget"
@@ -87,7 +87,7 @@ struct TokenUsageMonitorWidget: Widget {
     }
 }
 
-// MARK: - Weekly widget (seven-day usage — small only)
+// MARK: - Weekly widget (seven-day usage - small only)
 
 struct WeeklyUsageWidget: Widget {
     let kind = "WeeklyUsageWidget"

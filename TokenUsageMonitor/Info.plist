@@ -8,12 +8,12 @@
     <string>1</string>
     <key>CFBundleShortVersionString</key>
     <string>1.0.0</string>
-    <!-- Hide from Dock — lives only in the menu bar -->
+    <!-- Hide from Dock - lives only in the menu bar -->
     <key>LSUIElement</key>
     <true/>
     <key>NSHighResolutionCapable</key>
     <true/>
     <key>NSHumanReadableCopyright</key>
-    <string>Source-Available License — free for personal, non-commercial use.</string>
+    <string>Source-Available License - free for personal, non-commercial use.</string>
 </dict>
 </plist>

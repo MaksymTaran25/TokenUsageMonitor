@@ -42,24 +42,24 @@
 </p>
 
 <p align="center">
-  <img src="screenshots/small-current.png" width="190" alt="Small Widget — Current Usage" />
+  <img src="screenshots/small-current.png" width="190" alt="Small Widget - Current Usage" />
   &nbsp;&nbsp;&nbsp;
-  <img src="screenshots/small-weekly.png" width="190" alt="Small Widget — Weekly Usage" />
+  <img src="screenshots/small-weekly.png" width="190" alt="Small Widget - Weekly Usage" />
 </p>
 
 ---
 
 ## Features
 
-- **Menu bar app** — live percentage display of your current rate limit usage
-- **Three widget sizes** — small, medium, and large desktop widgets via WidgetKit
-- **Weekly widget** — dedicated small widget for seven-day usage tracking
-- **Token breakdown** — per-model stats (Opus, Sonnet, Haiku) parsed from local Claude logs
-- **Monthly summary** — 30-day cumulative token and message counts
-- **Customizable layout** — show/hide and drag-to-reorder sections in the menu bar popover
-- **Time windows** — switch between 24h, 7-day, and 30-day views for token stats
-- **Rate limit handling** — graceful fallback when API returns 429, shows last known data
-- **Auto-refresh** — polls usage data every 5 minutes in the background
+- **Menu bar app** - live percentage display of your current rate limit usage
+- **Three widget sizes** - small, medium, and large desktop widgets via WidgetKit
+- **Weekly widget** - dedicated small widget for seven-day usage tracking
+- **Token breakdown** - per-model stats (Opus, Sonnet, Haiku) parsed from local Claude logs
+- **Monthly summary** - 30-day cumulative token and message counts
+- **Customizable layout** - show/hide and drag-to-reorder sections in the menu bar popover
+- **Time windows** - switch between 24h, 7-day, and 30-day views for token stats
+- **Rate limit handling** - graceful fallback when API returns 429, shows last known data
+- **Auto-refresh** - polls usage data every 5 minutes in the background
 
 ## Prerequisites
 
@@ -73,11 +73,11 @@
 
 ## Install
 
-### Option 1 — Download DMG
+### Option 1 - Download DMG
 
 Download the latest `.dmg` from [Releases](https://github.com/MaksymTaran25/TokenUsageMonitor/releases), open it, and drag the app to Applications.
 
-### Option 2 — Build from source
+### Option 2 - Build from source
 
 Requirements: Xcode 16+, [XcodeGen](https://github.com/yonaskolb/XcodeGen) (`brew install xcodegen`)
 
@@ -123,7 +123,7 @@ TokenUsageMonitor/
 
 ## How It Works
 
-1. **OAuth credentials** are read from the macOS Keychain (stored by Claude Code CLI) — no manual token setup required
+1. **OAuth credentials** are read from the macOS Keychain (stored by Claude Code CLI) - no manual token setup required
 2. **Rate limit data** is fetched from Anthropic's internal OAuth usage endpoint (`/api/oauth/usage`)
 3. **Token breakdown** is parsed from Claude Code's local JSONL conversation logs in `~/.claude/projects/`
 4. Data is shared between the menu bar app and widgets via an App Group container file
@@ -154,4 +154,4 @@ If building from source, open `project.yml` and set `DEVELOPMENT_TEAM` to your o
 
 ## License
 
-[Source-Available](LICENSE) — free for personal, non-commercial use. Commercial use and resale require written permission from the author.
+[Source-Available](LICENSE) - free for personal, non-commercial use. Commercial use and resale require written permission from the author.

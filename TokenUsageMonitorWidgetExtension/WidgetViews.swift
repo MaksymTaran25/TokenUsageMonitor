@@ -29,7 +29,7 @@ struct WeeklyWidgetEntryView: View {
     }
 }
 
-// MARK: - Small widget — hero percentage + bar for primary bucket
+// MARK: - Small widget - hero percentage + bar for primary bucket
 
 struct SmallWidgetView: View {
     var snapshot: UsageSnapshot
@@ -87,7 +87,7 @@ struct SmallWidgetView: View {
     }
 }
 
-// MARK: - Small widget (Seven days) — shows seven_day bucket
+// MARK: - Small widget (Seven days) - shows seven_day bucket
 
 struct SmallWeeklyWidgetView: View {
     var snapshot: UsageSnapshot
@@ -147,7 +147,7 @@ struct SmallWeeklyWidgetView: View {
     }
 }
 
-// MARK: - Medium widget — all buckets + token summary
+// MARK: - Medium widget - all buckets + token summary
 
 struct MediumWidgetView: View {
     var snapshot: UsageSnapshot
@@ -228,7 +228,7 @@ struct MediumWidgetView: View {
     }
 }
 
-// MARK: - Large widget — full dashboard with all buckets + detailed breakdown
+// MARK: - Large widget - full dashboard with all buckets + detailed breakdown
 
 struct LargeWidgetView: View {
     var snapshot: UsageSnapshot
@@ -403,7 +403,7 @@ struct WidgetAppIcon: View {
 
     var body: some View {
         ZStack {
-            // Outer gradient border — fully opaque so it's visible on any widget background
+            // Outer gradient border - fully opaque so it's visible on any widget background
             RoundedRectangle(cornerRadius: size * 0.28, style: .continuous)
                 .fill(
                     LinearGradient(
@@ -418,12 +418,12 @@ struct WidgetAppIcon: View {
                 )
                 .frame(width: size, height: size)
 
-            // Inner dark face — opaque black-ish, not semi-transparent
+            // Inner dark face - opaque black-ish, not semi-transparent
             RoundedRectangle(cornerRadius: size * 0.2, style: .continuous)
                 .fill(Color(red: 0.1, green: 0.08, blue: 0.14))
                 .frame(width: size * 0.76, height: size * 0.76)
 
-            // Icon — bright gradient so it pops on the dark face
+            // Icon - bright gradient so it pops on the dark face
             Image(systemName: "speedometer")
                 .foregroundStyle(
                     LinearGradient(

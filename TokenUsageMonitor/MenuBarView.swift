@@ -329,7 +329,7 @@ struct MenuBarView: View {
             Image(systemName: "clock.badge.exclamationmark")
                 .font(.system(size: 10))
                 .foregroundStyle(.orange)
-            Text("API rate limited — showing last known data")
+            Text("API rate limited - showing last known data")
                 .font(.system(size: 10))
                 .foregroundStyle(.secondary)
         }

@@ -2,8 +2,8 @@
 # Builds Token Usage Monitor into a distributable .app bundle.
 #
 # Usage:
-#   ./build.sh          — build the app
-#   ./build.sh dmg      — build and package into a DMG
+#   ./build.sh          - build the app
+#   ./build.sh dmg      - build and package into a DMG
 
 set -e
 
@@ -20,7 +20,7 @@ if ! xcode-select -p &>/dev/null; then
 fi
 
 if ! command -v xcodegen &>/dev/null; then
-    echo "xcodegen not found — installing via Homebrew..."
+    echo "xcodegen not found - installing via Homebrew..."
     if ! command -v brew &>/dev/null; then
         echo "Error: Homebrew is required. Install from https://brew.sh"
         exit 1
@@ -51,7 +51,7 @@ xcodebuild \
 APP_PATH="${BUILD_DIR}/DerivedData/Build/Products/Release/${APP_NAME}.app"
 
 if [ ! -d "${APP_PATH}" ]; then
-    echo "Error: Build failed — ${APP_NAME}.app not found."
+    echo "Error: Build failed - ${APP_NAME}.app not found."
     exit 1
 fi
 

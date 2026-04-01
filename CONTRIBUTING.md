@@ -1,12 +1,12 @@
 # Contributing to Token Usage Monitor
 
-Thanks for your interest in contributing. This is a personal open-source project — contributions are welcome but please read this guide first.
+Thanks for your interest in contributing. This is a personal open-source project - contributions are welcome but please read this guide first.
 
 ## Before you start
 
 - Check [open issues](https://github.com/MaksymTaran25/TokenUsageMonitor/issues) to avoid duplicate work
 - For significant changes, open an issue first to discuss the approach
-- This project uses undocumented Anthropic APIs that may change — keep that in mind when adding features that depend on them
+- This project uses undocumented Anthropic APIs that may change - keep that in mind when adding features that depend on them
 
 ## Development setup
 
@@ -69,8 +69,8 @@ Or press `Cmd+U` in Xcode.
 ## Code style
 
 - Follow existing Swift conventions in the codebase
-- Keep files focused — don't add unrelated changes to a PR
-- No third-party dependencies — this project intentionally uses only Apple frameworks
+- Keep files focused - don't add unrelated changes to a PR
+- No third-party dependencies - this project intentionally uses only Apple frameworks
 - Add unit tests for any new logic in `Shared/` or the parsing layer
 
 ## Submitting a PR

@@ -63,7 +63,7 @@ final class DataManager: ObservableObject {
         // Update rate-limited flag based on this fetch
         switch fetchResult {
         case .success(let buckets):
-            Logger.data.info("Refresh succeeded — \(buckets.count) bucket(s)")
+            Logger.data.info("Refresh succeeded - \(buckets.count) bucket(s)")
             consecutiveRateLimits = 0
             isRateLimited = false
             snapshot = makeSnapshot(buckets: buckets, tokenData: tokenData, monthlyData: monthlyData)
@@ -184,7 +184,7 @@ final class DataManager: ObservableObject {
               let data  = try? Data(contentsOf: url),
               var saved = try? JSONDecoder().decode(UsageSnapshot.self, from: data)
         else {
-            Logger.data.debug("No cached snapshot found — starting fresh")
+            Logger.data.debug("No cached snapshot found - starting fresh")
             return
         }
         // Ensure correct sort even for cached data

@@ -56,7 +56,7 @@ final class OAuthManager {
             return creds
         }
         if let creds = loadFromFile() {
-            Logger.oauth.warning("Keychain empty — fell back to credentials file")
+            Logger.oauth.warning("Keychain empty - fell back to credentials file")
             return creds
         }
         Logger.oauth.error("No credentials found in keychain or file")

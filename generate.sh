@@ -5,7 +5,7 @@
 set -e
 
 if ! command -v xcodegen &>/dev/null; then
-    echo "xcodegen not found — installing via Homebrew..."
+    echo "xcodegen not found - installing via Homebrew..."
     brew install xcodegen
 fi
 
