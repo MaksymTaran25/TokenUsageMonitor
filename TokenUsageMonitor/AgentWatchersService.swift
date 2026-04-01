@@ -51,7 +51,7 @@ final class AgentWatchersService: ObservableObject {
         }
     }
 
-    private static func detectSessions() -> [AgentSession] {
+    private nonisolated static func detectSessions() -> [AgentSession] {
         let output = shell("/bin/ps", ["-eo", "pid,comm"])
         return output.split(separator: "\n").compactMap { line -> AgentSession? in
             let parts = line.trimmingCharacters(in: .whitespaces).split(separator: " ", maxSplits: 1)
@@ -66,7 +66,7 @@ final class AgentWatchersService: ObservableObject {
         }
     }
 
-    private static func workingDir(pid: Int) -> String {
+    private nonisolated static func workingDir(pid: Int) -> String {
         let out = shell("/usr/sbin/lsof", ["-p", "\(pid)", "-d", "cwd", "-Fn"])
         for line in out.split(separator: "\n") where line.hasPrefix("n") {
             return String(line.dropFirst())
@@ -75,7 +75,7 @@ final class AgentWatchersService: ObservableObject {
     }
 
     @discardableResult
-    private static func shell(_ path: String, _ args: [String]) -> String {
+    private nonisolated static func shell(_ path: String, _ args: [String]) -> String {
         let task = Process()
         task.executableURL = URL(fileURLWithPath: path)
         task.arguments = args
