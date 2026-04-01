@@ -4,6 +4,7 @@
 
 import Foundation
 import Combine
+import ServiceManagement
 
 /// Persists user preferences for which sections to display and in what order.
 @MainActor
@@ -45,14 +46,35 @@ final class SettingsManager: ObservableObject {
 
     /// Last selected time window in hours (24, 168, or 720).
     @Published var windowHours: Int {
-        didSet {
-            UserDefaults.standard.set(windowHours, forKey: windowKey)
-        }
+        didSet { UserDefaults.standard.set(windowHours, forKey: windowKey) }
     }
 
-    private let key = "com.tokenusagemonitor.settings.v1"
-    private let refreshKey = "com.tokenusagemonitor.refreshInterval"
-    private let windowKey  = "com.tokenusagemonitor.windowHours"
+    /// Whether to send notifications when usage thresholds are crossed.
+    @Published var notificationsEnabled: Bool {
+        didSet { UserDefaults.standard.set(notificationsEnabled, forKey: notifEnabledKey) }
+    }
+
+    /// Utilization % at which a warning notification fires.
+    @Published var warningThreshold: Double {
+        didSet { UserDefaults.standard.set(warningThreshold, forKey: warnThreshKey) }
+    }
+
+    /// Utilization % at which a critical notification fires.
+    @Published var criticalThreshold: Double {
+        didSet { UserDefaults.standard.set(criticalThreshold, forKey: critThreshKey) }
+    }
+
+    /// Whether the app launches automatically at login.
+    @Published var launchAtLogin: Bool {
+        didSet { LaunchAtLoginService.shared.setEnabled(launchAtLogin) }
+    }
+
+    private let key            = "com.tokenusagemonitor.settings.v1"
+    private let refreshKey     = "com.tokenusagemonitor.refreshInterval"
+    private let windowKey      = "com.tokenusagemonitor.windowHours"
+    private let notifEnabledKey = "com.tokenusagemonitor.notifEnabled"
+    private let warnThreshKey  = "com.tokenusagemonitor.warnThreshold"
+    private let critThreshKey  = "com.tokenusagemonitor.critThreshold"
 
     private init() {
         if let data = UserDefaults.standard.data(forKey: key),
@@ -68,6 +90,11 @@ final class SettingsManager: ObservableObject {
 
         let savedWindow = UserDefaults.standard.integer(forKey: windowKey)
         self.windowHours = Constants.Time.validWindows.contains(savedWindow) ? savedWindow : Constants.Time.hours24
+
+        self.notificationsEnabled = UserDefaults.standard.bool(forKey: "com.tokenusagemonitor.notifEnabled")
+        self.warningThreshold     = UserDefaults.standard.object(forKey: "com.tokenusagemonitor.warnThreshold")  as? Double ?? 80
+        self.criticalThreshold    = UserDefaults.standard.object(forKey: "com.tokenusagemonitor.critThreshold") as? Double ?? 90
+        self.launchAtLogin        = LaunchAtLoginService.shared.isEnabled
     }
 
     /// Returns whether a section ID is currently visible.

@@ -7,9 +7,11 @@ import SwiftUI
 @main
 struct TokenUsageMonitorApp: App {
     @StateObject private var dataManager = DataManager()
+    @StateObject private var theme       = ThemeManager.shared
 
     init() {
         Task { await UpdateService.shared.checkForUpdates() }
+        Task { @MainActor in AgentWatchersService.shared.start() }
     }
 
     var body: some Scene {
@@ -25,8 +27,18 @@ struct TokenUsageMonitorApp: App {
                 }())
                 Text(dataManager.titleLabel)
                     .font(.system(size: 11, weight: .medium, design: .monospaced))
+                    .foregroundStyle(menuBarStatusColor)
             }
         }
         .menuBarExtraStyle(.window)
+    }
+
+    private var menuBarStatusColor: Color {
+        guard let status = dataManager.snapshot.primaryBucket?.status else { return .primary }
+        switch status {
+        case .normal:   return theme.normalGlow
+        case .warning:  return theme.warningGlow
+        case .critical: return theme.criticalGlow
+        }
     }
 }

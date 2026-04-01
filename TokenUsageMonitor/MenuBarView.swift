@@ -9,6 +9,7 @@ struct MenuBarView: View {
     @ObservedObject private var settings = SettingsManager.shared
     @ObservedObject private var updater  = UpdateService.shared
     @ObservedObject private var theme    = ThemeManager.shared
+    @ObservedObject private var watchers = AgentWatchersService.shared
     @State private var showSettings = false
 
     var body: some View {
@@ -248,6 +249,7 @@ struct MenuBarView: View {
     // MARK: - Settings panel
 
     private var settingsPanel: some View {
+        ScrollView {
         VStack(alignment: .leading, spacing: 8) {
             Text("Visible sections")
                 .font(.system(size: 10, weight: .medium))
@@ -317,7 +319,38 @@ struct MenuBarView: View {
                 }
                 .padding(.top, 4)
             }
+
+            Divider().padding(.vertical, 4)
+
+            HStack {
+                Text("Notifications")
+                    .font(.system(size: 10, weight: .medium))
+                    .foregroundStyle(.secondary)
+                Spacer()
+                Toggle("", isOn: $settings.notificationsEnabled)
+                    .labelsHidden()
+                    .controlSize(.mini)
+                    .onChange(of: settings.notificationsEnabled) { _, enabled in
+                        if enabled { NotificationService.shared.requestPermission() }
+                    }
+            }
+
+            if settings.notificationsEnabled {
+                ThresholdSlider(label: "Warn at",     value: $settings.warningThreshold,  color: .orange)
+                ThresholdSlider(label: "Critical at", value: $settings.criticalThreshold, color: .red)
+            }
+
+            Divider().padding(.vertical, 4)
+
+            Toggle(isOn: $settings.launchAtLogin) {
+                Text("Launch at login")
+                    .font(.system(size: 11))
+                    .foregroundStyle(.secondary)
+            }
+            .controlSize(.mini)
         }
+        } // ScrollView
+        .frame(maxHeight: 380)
     }
 
     // MARK: - Footer
@@ -332,8 +365,17 @@ struct MenuBarView: View {
                     Task { await dm.refresh() }
                 }
 
-                Divider()
-                    .frame(height: 30)
+                Divider().frame(height: 30)
+
+                FooterButton(
+                    icon: "binoculars.fill",
+                    label: "Watchers",
+                    badge: watchers.sessions.isEmpty ? nil : "\(watchers.sessions.count)"
+                ) {
+                    watchers.isVisible.toggle()
+                }
+
+                Divider().frame(height: 30)
 
                 FooterButton(
                     icon: showSettings ? "xmark" : "gearshape",
@@ -344,8 +386,7 @@ struct MenuBarView: View {
                     }
                 }
 
-                Divider()
-                    .frame(height: 30)
+                Divider().frame(height: 30)
 
                 FooterButton(icon: "power", label: "Quit") {
                     NSApplication.shared.terminate(nil)
@@ -551,6 +592,7 @@ struct WindowTab: View {
 struct FooterButton: View {
     let icon: String
     let label: String
+    var badge: String? = nil
     let action: () -> Void
 
     @State private var isHovered = false
@@ -558,8 +600,18 @@ struct FooterButton: View {
     var body: some View {
         Button(action: action) {
             VStack(spacing: 4) {
-                Image(systemName: icon)
-                    .font(.system(size: 14))
+                ZStack(alignment: .topTrailing) {
+                    Image(systemName: icon)
+                        .font(.system(size: 14))
+                    if let badge {
+                        Text(badge)
+                            .font(.system(size: 7, weight: .bold))
+                            .foregroundStyle(.white)
+                            .padding(2)
+                            .background(Circle().fill(Color.green))
+                            .offset(x: 6, y: -4)
+                    }
+                }
                 Text(label)
                     .font(.system(size: 10))
             }
@@ -573,6 +625,29 @@ struct FooterButton: View {
         }
         .buttonStyle(.plain)
         .onHover { isHovered = $0 }
+    }
+}
+
+// MARK: - Threshold slider
+
+struct ThresholdSlider: View {
+    let label: String
+    @Binding var value: Double
+    let color: Color
+
+    var body: some View {
+        HStack(spacing: 8) {
+            Text(label)
+                .font(.system(size: 10))
+                .foregroundStyle(.secondary)
+                .frame(width: 60, alignment: .leading)
+            Slider(value: $value, in: 50...99, step: 5)
+                .accentColor(color)
+            Text("\(Int(value))%")
+                .font(.system(size: 10, design: .monospaced))
+                .foregroundStyle(.secondary)
+                .frame(width: 32, alignment: .trailing)
+        }
     }
 }
 

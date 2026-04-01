@@ -67,6 +67,14 @@ final class DataManager: ObservableObject {
             consecutiveRateLimits = 0
             isRateLimited = false
             snapshot = makeSnapshot(buckets: buckets, tokenData: tokenData, monthlyData: monthlyData)
+            let settings = SettingsManager.shared
+            if settings.notificationsEnabled {
+                NotificationService.shared.check(
+                    buckets: buckets,
+                    warningAt: settings.warningThreshold,
+                    criticalAt: settings.criticalThreshold
+                )
+            }
         case .rateLimited:
             consecutiveRateLimits += 1
             Logger.data.warning("Rate limited (consecutive: \(self.consecutiveRateLimits))")
