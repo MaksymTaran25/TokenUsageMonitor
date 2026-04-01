@@ -11,6 +11,7 @@
 // usage endpoint on behalf of the authenticated user.
 
 import Foundation
+import OSLog
 
 struct OAuthCredentials {
     let accessToken: String
@@ -20,7 +21,7 @@ struct OAuthCredentials {
     var isExpired: Bool {
         guard let expiresAt else { return false }
         // Give a 60-second buffer before actual expiry
-        return Date() >= expiresAt.addingTimeInterval(-60)
+        return Date() >= expiresAt.addingTimeInterval(-Constants.OAuth.expiryBufferSeconds)
     }
 }
 
@@ -50,8 +51,15 @@ final class OAuthManager {
     // MARK: - Public
 
     func loadCredentials() throws -> OAuthCredentials {
-        if let creds = loadFromKeychain() { return creds }
-        if let creds = loadFromFile()     { return creds }
+        if let creds = loadFromKeychain() {
+            Logger.oauth.debug("Loaded credentials from keychain (expired: \(creds.isExpired))")
+            return creds
+        }
+        if let creds = loadFromFile() {
+            Logger.oauth.warning("Keychain empty — fell back to credentials file")
+            return creds
+        }
+        Logger.oauth.error("No credentials found in keychain or file")
         throw CredentialError.notFound
     }
 

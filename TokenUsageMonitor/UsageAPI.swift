@@ -48,7 +48,7 @@ struct UsageAPI {
             "ClaudeTokenMonitor/1.0.0 (https://github.com/open-source-disclaimer)",
             forHTTPHeaderField: "User-Agent"
         )
-        request.timeoutInterval = 15
+        request.timeoutInterval = Constants.API.timeoutSeconds
 
         let (data, response) = try await URLSession.shared.data(for: request)
 

@@ -3,7 +3,6 @@
 // Not affiliated with or endorsed by Anthropic. Use at your own risk.
 
 import XCTest
-@testable import TokenUsageMonitor
 
 final class UsageParserTests: XCTestCase {
 

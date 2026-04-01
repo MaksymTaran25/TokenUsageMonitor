@@ -64,10 +64,10 @@ final class SettingsManager: ObservableObject {
         }
 
         let savedInterval = UserDefaults.standard.integer(forKey: refreshKey)
-        self.refreshInterval = savedInterval > 0 ? savedInterval : 300 // default 5 min
+        self.refreshInterval = savedInterval > 0 ? savedInterval : Constants.Refresh.defaultIntervalSeconds
 
         let savedWindow = UserDefaults.standard.integer(forKey: windowKey)
-        self.windowHours = [24, 168, 720].contains(savedWindow) ? savedWindow : 24
+        self.windowHours = Constants.Time.validWindows.contains(savedWindow) ? savedWindow : Constants.Time.hours24
     }
 
     /// Returns whether a section ID is currently visible.

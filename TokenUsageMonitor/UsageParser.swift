@@ -3,6 +3,7 @@
 // Not affiliated with or endorsed by Anthropic. Use at your own risk.
 
 import Foundation
+import OSLog
 
 private let claudeProjectsDir = FileManager.default
     .homeDirectoryForCurrentUser
@@ -30,7 +31,7 @@ func parseUsage(hours: Int, directory: URL? = nil) -> UsageSnapshot {
         // Skip files whose mtime predates the window by more than 1h
         if let mtime = try? fileURL.resourceValues(
             forKeys: [.contentModificationDateKey]
-        ).contentModificationDate, mtime < cutoff.addingTimeInterval(-3600) {
+        ).contentModificationDate, mtime < cutoff.addingTimeInterval(-Constants.Parser.fileModificationBufferSeconds) {
             continue
         }
 
@@ -43,7 +44,9 @@ func parseUsage(hours: Int, directory: URL? = nil) -> UsageSnapshot {
         }
     }
 
-    return aggregate(entries: entries, hours: hours)
+    let result = aggregate(entries: entries, hours: hours)
+    Logger.parser.info("Parsed \(entries.count) entries across \(hours)h window (\(result.byModel.count) model(s))")
+    return result
 }
 
 // MARK: - Private helpers

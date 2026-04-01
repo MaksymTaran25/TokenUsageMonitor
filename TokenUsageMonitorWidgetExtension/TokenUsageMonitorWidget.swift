@@ -4,6 +4,9 @@
 
 import WidgetKit
 import SwiftUI
+import OSLog
+
+private let widgetLogger = Logger(subsystem: "com.tokenusagemonitor.app", category: "Widget")
 
 // MARK: - Timeline provider
 
@@ -13,18 +16,46 @@ struct Provider: TimelineProvider {
     }
 
     func getSnapshot(in context: Context, completion: @escaping (UsageEntry) -> Void) {
-        completion(UsageEntry(date: .now, snapshot: loadSnapshot()))
+        completion(UsageEntry(date: .now, snapshot: buildSnapshot()))
     }
 
     func getTimeline(in context: Context, completion: @escaping (Timeline<UsageEntry>) -> Void) {
-        let snapshot = loadSnapshot()
+        let snapshot = buildSnapshot()
         let entry    = UsageEntry(date: .now, snapshot: snapshot)
         // Reload every minute so the widget stays current
         let next     = Calendar.current.date(byAdding: .minute, value: 1, to: .now)!
         completion(Timeline(entries: [entry], policy: .after(next)))
     }
 
-    private func loadSnapshot() -> UsageSnapshot {
+    /// Builds the freshest possible snapshot by combining:
+    /// - Cached bucket/quota data from the shared container (written by the main app)
+    /// - Freshly parsed JSONL token data read directly from ~/.claude/projects/
+    private func buildSnapshot() -> UsageSnapshot {
+        let cached  = loadCachedSnapshot()
+        let hours   = cached.windowHours > 0 ? cached.windowHours : 24
+        let fresh   = parseUsage(hours: hours)
+
+        // If JSONL parsing found data, merge with cached bucket info
+        if fresh.totalTokens > 0 || !fresh.byModel.isEmpty {
+            widgetLogger.info("Widget refresh: fresh JSONL data merged with \(cached.buckets.count) cached bucket(s)")
+            return UsageSnapshot(
+                buckets:         cached.buckets,
+                totalTokens:     fresh.totalTokens,
+                inputTokens:     fresh.inputTokens,
+                outputTokens:    fresh.outputTokens,
+                messageCount:    fresh.messageCount,
+                byModel:         fresh.byModel,
+                windowHours:     hours,
+                lastUpdated:     cached.lastUpdated,
+                monthlyTokens:   cached.monthlyTokens,
+                monthlyMessages: cached.monthlyMessages
+            )
+        }
+        widgetLogger.debug("Widget refresh: no fresh JSONL data, using cached snapshot")
+        return cached
+    }
+
+    private func loadCachedSnapshot() -> UsageSnapshot {
         guard let url      = sharedSnapshotURL(),
               let data     = try? Data(contentsOf: url),
               let snapshot = try? JSONDecoder().decode(UsageSnapshot.self, from: data)
