@@ -8,6 +8,27 @@ All notable changes to Token Usage Monitor are documented here.
 
 ---
 
+## [1.2.0] - 2026-04-01
+
+### Fixed
+- Widgets now appear in the macOS widget picker when installed via Homebrew or DMG
+- Replaced App Group shared container with widget's own sandbox container, eliminating the need for a paid Apple Developer account to provision the App Group
+
+---
+
+## [1.1.0] - 2026-04-01
+
+### Fixed
+- Fixed pipe deadlock bug that caused Agent Watchers session detection to hang silently
+- Fixed incorrect working directory detection in Agent Watchers (missing `-a` flag in `lsof`)
+- Agent Watchers polling now only runs while the panel is open
+
+### Changed
+- Click any Agent Watcher session to bring its terminal to the foreground (falls back to Finder)
+- Launch at login checkbox layout matches Notifications row
+
+---
+
 ## [1.0.0] - 2026-03-31
 
 ### Added
@@ -32,5 +53,7 @@ All notable changes to Token Usage Monitor are documented here.
 
 ---
 
-[Unreleased]: https://github.com/MaksymTaran25/TokenUsageMonitor/compare/v1.0.0...HEAD
+[Unreleased]: https://github.com/MaksymTaran25/TokenUsageMonitor/compare/v1.2.0...HEAD
+[1.2.0]: https://github.com/MaksymTaran25/TokenUsageMonitor/compare/v1.1.0...v1.2.0
+[1.1.0]: https://github.com/MaksymTaran25/TokenUsageMonitor/compare/v1.0.0...v1.1.0
 [1.0.0]: https://github.com/MaksymTaran25/TokenUsageMonitor/releases/tag/v1.0.0
